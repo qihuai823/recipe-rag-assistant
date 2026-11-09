@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>今天吃什么 · 食谱 RAG 助手</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --line: #e6e8ec;
+    --text: #1c1f23;
+    --muted: #6b7280;
+    --brand: #ff6b35;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font: 15px/1.7 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    display: flex; justify-content: center; padding: 48px 20px;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+  header h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  header p { color: var(--muted); margin: 0 0 26px; font-size: 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px; box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+  .chip {
+    border: 1px solid var(--line); background: #fff; color: var(--muted);
+    padding: 5px 12px; border-radius: 999px; font-size: 13px; cursor: pointer;
+    transition: .15s;
+  }
+  .chip:hover { color: var(--brand); border-color: var(--brand); }
+  .row { display: flex; gap: 10px; }
+  input[type=text] {
+    flex: 1; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
+    font-size: 15px; outline: none; background: #fff;
+  }
+  input[type=text]:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(255,107,53,.12); }
+  button {
+    padding: 12px 20px; border: 0; border-radius: 10px; background: var(--brand);
+    color: #fff; font-size: 15px; cursor: pointer; white-space: nowrap;
+  }
+  button:disabled { opacity: .55; cursor: progress; }
+  #out { margin-top: 18px; min-height: 90px; }
+  .answer {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px; white-space: pre-wrap;
+  }
+  .meta { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .loading { color: var(--muted); font-size: 14px; }
+  footer { color: var(--muted); font-size: 12.5px; margin-top: 22px; text-align: center; }
+  a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍳 今天吃什么</h1>
+    <p>基于 323 道菜谱的检索增强问答：混合检索（向量 + BM25 + RRF）+ 元数据过滤 + DeepSeek 生成</p>
+  </header>
+
+  <div class="card">
+    <div class="row">
+      <input id="q" type="text" placeholder="例如：有什么简单的素菜推荐？" autofocus />
+      <button id="go">提问</button>
+    </div>
+    <div class="chips">
+      <span class="chip">宫保鸡丁怎么做？</span>
+      <span class="chip">有什么简单的素菜推荐？</span>
+      <span class="chip">适合新手的汤品有哪些？</span>
+      <span class="chip">番茄炒蛋要准备什么原料？</span>
+    </div>
+  </div>
+
+  <div id="out"></div>
+
+  <footer>检索结果来自站内菜谱数据，回答由大模型生成，仅供参考。</footer>
+</div>
+
+<script>
+const input = document.getElementById('q');
+const go = document.getElementById('go');
+const out = document.getElementById('out');
+
+document.querySelectorAll('.chip').forEach(el => {
+  el.addEventListener('click', () => { input.value = el.textContent; ask(); });
+});
+input.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+go.addEventListener('click', ask);
+
+async function ask() {
+  const question = input.value.trim();
+  if (!question) return;
+  go.disabled = true;
+  const t0 = performance.now();
+  out.innerHTML = '<div class="loading">检索与生成中…</div>';
+  try {
+    const resp = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+    const data = await resp.json();
+    const secs = ((performance.now() - t0) / 1000).toFixed(1);
+    if (data.error) throw new Error(data.error);
+    out.innerHTML = '';
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = `耗时 ${secs}s`;
+    const box = document.createElement('div');
+    box.className = 'answer';
+    box.textContent = data.answer;
+    out.append(meta, box);
+  } catch (e) {
+    out.innerHTML = '<div class="answer">出错了：' + e.message + '</div>';
+  } finally {
+    go.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

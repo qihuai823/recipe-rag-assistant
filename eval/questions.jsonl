@@ -1,0 +1,21 @@
+{"id": "D01", "type": "detail", "question": "罗宋汤怎么做？", "expect_dish": "罗宋汤", "expect_category": "汤品", "expect_difficulty": "中等"}
+{"id": "D02", "type": "detail", "question": "酸辣土豆丝怎么做？", "expect_dish": "酸辣土豆丝", "expect_category": "素菜", "expect_difficulty": "中等"}
+{"id": "D03", "type": "detail", "question": "蚂蚁上树怎么做？", "expect_dish": "蚂蚁上树", "expect_category": "荤菜", "expect_difficulty": "中等"}
+{"id": "D04", "type": "detail", "question": "煮泡面加蛋怎么做？", "expect_dish": "煮泡面加蛋", "expect_category": "主食", "expect_difficulty": "中等"}
+{"id": "D05", "type": "detail", "question": "清蒸南瓜怎么做？", "expect_dish": "清蒸南瓜", "expect_category": "素菜", "expect_difficulty": "中等"}
+{"id": "D06", "type": "detail", "question": "陕北熬豆角怎么做？", "expect_dish": "陕北熬豆角", "expect_category": "素菜", "expect_difficulty": "中等"}
+{"id": "D07", "type": "detail", "question": "凉拌豆腐怎么做？", "expect_dish": "凉拌豆腐", "expect_category": "素菜", "expect_difficulty": "中等"}
+{"id": "D08", "type": "detail", "question": "糖醋里脊怎么做？", "expect_dish": "糖醋里脊", "expect_category": "荤菜", "expect_difficulty": "中等"}
+{"id": "D09", "type": "detail", "question": "麻油拌面怎么做？", "expect_dish": "麻油拌面", "expect_category": "主食", "expect_difficulty": "中等"}
+{"id": "D10", "type": "detail", "question": "蛋炒饭怎么做？", "expect_dish": "蛋炒饭", "expect_category": "主食", "expect_difficulty": "中等"}
+{"id": "D11", "type": "detail", "question": "螺蛳粉怎么做？", "expect_dish": "螺蛳粉", "expect_category": "主食", "expect_difficulty": "中等"}
+{"id": "D12", "type": "detail", "question": "蚝油生菜怎么做？", "expect_dish": "蚝油生菜", "expect_category": "素菜", "expect_difficulty": "简单"}
+{"id": "D13", "type": "detail", "question": "带把肘子怎么做？", "expect_dish": "带把肘子", "expect_category": "荤菜", "expect_difficulty": "中等"}
+{"id": "D14", "type": "detail", "question": "红烧鲤鱼怎么做？", "expect_dish": "红烧鲤鱼", "expect_category": "水产", "expect_difficulty": "困难"}
+{"id": "D15", "type": "detail", "question": "黄瓜炒肉怎么做？", "expect_dish": "黄瓜炒肉", "expect_category": "荤菜", "expect_difficulty": "中等"}
+{"id": "L01", "type": "list", "question": "有什么简单的素菜推荐？", "expect_dish": null, "expect_category": "素菜", "expect_difficulty": "简单", "sample_dish": "鸡蛋火腿炒黄"}
+{"id": "L02", "type": "list", "question": "有什么中等的荤菜推荐？", "expect_dish": null, "expect_category": "荤菜", "expect_difficulty": "中等", "sample_dish": "烤鸡翅"}
+{"id": "L03", "type": "list", "question": "有什么简单的汤品推荐？", "expect_dish": null, "expect_category": "汤品", "expect_difficulty": "简单", "sample_dish": "紫菜蛋花汤"}
+{"id": "L04", "type": "list", "question": "有什么中等的主食推荐？", "expect_dish": null, "expect_category": "主食", "expect_difficulty": "中等", "sample_dish": "螺蛳粉"}
+{"id": "L05", "type": "list", "question": "有什么中等的水产推荐？", "expect_dish": null, "expect_category": "水产", "expect_difficulty": "中等", "sample_dish": "红烧鱼头"}
+{"id": "L06", "type": "list", "question": "有什么非常简单的素菜推荐？", "expect_dish": null, "expect_category": "素菜", "expect_difficulty": "非常简单", "sample_dish": "凉拌油麦菜"}

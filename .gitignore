@@ -1,0 +1,21 @@
+# 环境
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 索引与模型（可由脚本重建/重新下载）
+vector_index/
+models/
+eval/report.json
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

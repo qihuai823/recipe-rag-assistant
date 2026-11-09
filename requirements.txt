@@ -1,0 +1,13 @@
+# 只保留真正被 import 到的依赖（原版 requirements 里的 unstructured / Markdown / lazy_loader 未被使用）
+langchain==0.3.26
+langchain-core>=0.3.71
+langchain-community==0.3.27
+langchain-huggingface==0.3.1
+langchain-text-splitters==0.3.8
+langchain-openai>=0.3.28
+langchain-deepseek==0.1.4
+faiss-cpu>=1.7.0
+sentence-transformers>=3.0.0
+rank_bm25==0.2.2
+openai>=1.86.0,<2.0.0
+python-dotenv>=1.0.0
