@@ -1,0 +1,27 @@
+Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+=======================================================================
+
+本作品（代码、结构、评测脚本与文档）采用 Creative Commons
+Attribution-NonCommercial-ShareAlike 4.0 International 协议授权。
+
+许可证全文（含法律条款）：https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+协议摘要（中文）：https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans
+
+-----------------------------------------------------------------------
+派生与署名说明 / Attribution & Modification Notice
+
+- 原始作品：datawhalechina/all-in-rag（https://github.com/datawhalechina/all-in-rag）
+  第 C8 章示例，原项目采用 CC BY-NC-SA 4.0。
+- 本仓库为对该示例的二次开发（Adapted Material），遵循同一协议（ShareAlike）。
+- 修改者：王凡（https://github.com/qihuai823），修改时间 2026-10 至 2026-11。
+- 主要修改：
+  1. 配置外置化（config.py / .env.example），去掉硬编码路径与参数；
+  2. 检索兜底策略：元数据过滤由「检索后筛选」改为「检索前下推」，
+     并对过滤后无结果的情况设计逐级放宽 + 回退混合检索；
+  3. 可复现评测：21 条自动评测集的构建、指标统计与报告输出；
+  4. 零依赖 Demo：本地一键 run / demo / eval 启动脚本与 Web 演示。
+- 未修改部分（原始数据的版权归原网站/作者所有，本仓库仅作学习与研究用途）：
+  data/ 下的菜谱文本数据。
+
+本作品仅供学习与非商业用途。转载或再创作时请保留本署名说明，
+并以相同协议（CC BY-NC-SA 4.0）共享。
