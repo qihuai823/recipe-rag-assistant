@@ -171,18 +171,40 @@ class RecipeRAGSystem:
         
         # 3. 检索相关子块（自动应用元数据过滤）
         print("🔍 检索相关文档...")
+        # 列表型问题承诺「推荐 3 道菜」，但检索返回的是 chunk：同一道菜的食材 /
+        # 步骤 / 小贴士是三个不同的块，回溯父文档去重后会缩水。实测只取 3 个块时，
+        # 6 条列表型问题里有 3 条去重后只剩 1 道菜（回答变成「为您推荐：金针菇汤」）。
+        # 所以列表型用更大的候选池，去重之后才够 top_k 道不同的菜。
+        retrieval_k = (
+            max(self.config.top_k, self.config.list_candidate_k)
+            if route_type == "list"
+            else self.config.top_k
+        )
         filters = self._extract_filters_from_query(question) if self.config.use_metadata_filter else {}
-        if filters:
+        if filters and self.config.filter_mode == "post":
+            # 对照组：先取候选再筛。候选池里恰好没有目标难度的文档时会被误判为空，
+            # 兜底放宽后返回的菜就不符合用户要求——这就是初版难度满足率 0.50 的来源。
+            print(f"应用过滤条件（检索后过滤，对照组）: {filters}")
+            relevant_chunks = self.retrieval_module.post_filtered_search(
+                rewritten_query, filters, top_k=retrieval_k
+            )
+            if not relevant_chunks:
+                print("检索后过滤无结果，退化为不加过滤的混合检索")
+                relevant_chunks = self.retrieval_module.hybrid_search(
+                    rewritten_query, top_k=retrieval_k
+                )
+                self._notice = "（没有找到完全符合条件的菜谱，以下为相关度最高的结果）\n\n"
+        elif filters:
             print(f"应用过滤条件: {filters}")
             relevant_chunks = self.retrieval_module.metadata_filtered_search(
-                rewritten_query, filters, top_k=self.config.top_k
+                rewritten_query, filters, top_k=retrieval_k
             )
             # 兜底 1：过滤过严导致 0 结果时，先放宽难度，只保留分类这类硬约束
             if not relevant_chunks and "difficulty" in filters:
                 relaxed = {k: v for k, v in filters.items() if k != "difficulty"}
                 print(f"过滤后无结果，放宽难度约束重试: {relaxed}")
                 relevant_chunks = self.retrieval_module.metadata_filtered_search(
-                    rewritten_query, relaxed, top_k=self.config.top_k
+                    rewritten_query, relaxed, top_k=retrieval_k
                 )
                 if relevant_chunks:
                     self._notice = "（当前语料里没有完全符合条件的菜谱，以下为放宽难度后的推荐）\n\n"
@@ -190,11 +212,11 @@ class RecipeRAGSystem:
             if not relevant_chunks:
                 print("过滤后仍无结果，退化为不加过滤的混合检索")
                 relevant_chunks = self.retrieval_module.hybrid_search(
-                    rewritten_query, top_k=self.config.top_k
+                    rewritten_query, top_k=retrieval_k
                 )
                 self._notice = "（没有找到完全符合条件的菜谱，以下为相关度最高的结果）\n\n"
         else:
-            relevant_chunks = self.retrieval_module.hybrid_search(rewritten_query, top_k=self.config.top_k)
+            relevant_chunks = self.retrieval_module.hybrid_search(rewritten_query, top_k=retrieval_k)
 
         # 显示检索到的子块信息
         if relevant_chunks:

@@ -31,19 +31,24 @@ class RetrievalOptimizationModule:
         """设置向量检索器和BM25检索器"""
         logger.info("正在设置检索器...")
 
+        # 候选池大小。实际返回条数由 hybrid_search / metadata_filtered_search 的
+        # top_k 参数控制：列表型问题需要 12 个块才能在按菜品去重后凑够 3 道菜，
+        # 而检索器若固定取 5 条，上面传多大的 top_k 都拿不到更多候选。
+        pool = 20
+
         # 向量检索器
         self.vector_retriever = self.vectorstore.as_retriever(
             search_type="similarity",
-            search_kwargs={"k": 5}
+            search_kwargs={"k": pool}
         )
 
         # BM25检索器
         self.bm25_retriever = BM25Retriever.from_documents(
             self.chunks,
-            k=5
+            k=pool
         )
 
-        logger.info("检索器设置完成")
+        logger.info(f"检索器设置完成（候选池 {pool}）")
     
     def hybrid_search(self, query: str, top_k: int = 3) -> List[Document]:
         """
@@ -89,6 +94,21 @@ class RetrievalOptimizationModule:
 
         reranked = self._rrf_rerank(vector_docs, bm25_docs)
         return reranked[:top_k]
+
+    def post_filtered_search(
+        self, query: str, filters: Dict[str, Any], top_k: int = 3, pool: int = 5
+    ) -> List[Document]:
+        """检索后过滤（对照组）：先取 top-k 候选，再按元数据筛。
+
+        这是项目的初版做法，也是难度条件满足率只有 0.50 的原因：候选池只有
+        pool 条，如果里面恰好没有目标难度的文档，就会被误判成「无结果」，
+        于是兜底逻辑放宽难度，返回的菜和用户要求的不符。
+
+        保留这个「已知更差」的实现不是留垃圾，是为了让 README 里那个 0.50
+        可以复现——否则它只是文档里一句没有证据的话，面试时经不起追问。
+        """
+        candidates = self.hybrid_search(query, top_k=pool)
+        return [doc for doc in candidates if self._match(doc, filters)][:top_k]
 
     @staticmethod
     def _match(doc: Document, filters: Dict[str, Any]) -> bool:

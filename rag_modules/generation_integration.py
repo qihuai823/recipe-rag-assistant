@@ -276,7 +276,10 @@ class GenerationIntegrationModule:
 
         # 构建简洁的列表回答
         if len(dish_names) == 1:
-            return f"为您推荐：{dish_names[0]}"
+            # 只有一道菜时要说清楚原因：用户问「有什么简单的素菜」却只收到一道，
+            # 不解释会被当成系统坏了。真实原因是候选池里的块全来自同一道菜，
+            # 去重后只剩一道——所以提示的是语料覆盖不足，不是检索失败。
+            return f"为您推荐：{dish_names[0]}\n\n（当前语料里符合这个条件的菜品只有这一道）"
         elif len(dish_names) <= 3:
             return f"为您推荐以下菜品：\n" + "\n".join([f"{i+1}. {name}" for i, name in enumerate(dish_names)])
         else:
